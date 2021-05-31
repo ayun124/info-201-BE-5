@@ -3,7 +3,10 @@ library(shiny)
 
 
 shinyUI(fluidPage(
-    titlePanel("Tuition Cost"),
+
+    tabsetPanel(
+      titlePanel("Tuition Cost"),
+      tabPanel("Tuition Cost", 
     sidebarLayout(
         sidebarPanel(
           uiOutput("typeSchool"),
@@ -11,11 +14,24 @@ shinyUI(fluidPage(
           
         ),
       
-       mainPanel(
+      mainPanel(
             plotOutput("map"),
             plotOutput("secondMap")
+      )
     )
-    )
+      )),  
+
+      tabPanel("Correlation",
+               sidebarLayout(
+                 sidebarPanel(
+                   
+                 ),
+                mainPanel(
+                  
+                )
+               ))
+
+    
     
 ))
 

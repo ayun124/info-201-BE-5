@@ -89,4 +89,6 @@ tuitionMap %>%
     select(out_of_state_tuition) %>% 
     arrange(out_of_state_tuition) %>% 
     head(5)
+
+
  
