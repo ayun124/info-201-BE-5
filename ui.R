@@ -33,6 +33,19 @@ shinyUI(fluidPage(
                 )
                 
                )
+      ),
+      
+      tabPanel("Diversity",
+               titlePanel("Diversity rate by race in Universities"),
+               sidebarLayout(
+                 sidebarPanel(
+                   
+                 ),
+                 mainPanel(
+                   plotOutput("barPlot")
+                 )
+                 
+               )
       )
     )
 ))

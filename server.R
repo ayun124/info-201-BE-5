@@ -13,6 +13,28 @@ salaryData <- read.csv("salary_potential.csv")
 stateMaps <- map_data("state")
 
 
+diversity <- diversityData %>% 
+    pivot_wider(
+                names_from = category, 
+                values_from = enrollment, values_fn = list(enrollment = mean)) %>% 
+    mutate(Women = Women/total_enrollment*100,
+            `American Indian / Alaska Native` = `American Indian / Alaska Native` / total_enrollment * 100,
+           Asian = Asian/total_enrollment * 100,
+           Black = Black/total_enrollment * 100,
+           Hispanic = Hispanic/total_enrollment * 100,
+           `Native Hawaiian / Pacific Islander` =  `Native Hawaiian / Pacific Islander` / total_enrollment * 100,
+           White = White/total_enrollment * 100,
+           `Two Or More Races` = `Two Or More Races` / total_enrollment * 100,
+           Unknown = Unknown/total_enrollment * 100,
+           `Non-Resident Foreign` = `Non-Resident Foreign`/total_enrollment * 100,
+           `Total Minority` = `Total Minority`/total_enrollment*100)
+    
+
+
+
+
+
+
 
 tuition <- tuitionData %>% 
     select(name, state, type, degree_length, in_state_tuition, out_of_state_tuition) %>% 
@@ -71,7 +93,7 @@ shinyServer(function(input, output) {
     })
     output$map <- renderPlot({
         ggplot(sample(), aes(long, lat)) +
-            geom_polygon(aes(fill= in_state_tuition, group = group), col = "black") +
+            geom_polygon(aes(fill= in_state_tuition, group = group), col = "black", na.value = "black") +
             coord_quickmap() +
             labs(title = "InState Tuition Cost")+
             scale_fill_continuous(limits = c(480,60000), low = "white", high = "blue")
@@ -85,9 +107,7 @@ shinyServer(function(input, output) {
     })
     
     
-    
-    
-    
+  
     
     
     
@@ -97,14 +117,14 @@ shinyServer(function(input, output) {
 
     
     chosenData <- reactive({
-        if(is.null(input$text)) {
-            correlationData %>% 
-                filter(state %in% input$state)
+        if(input$state == "all"){
+            correlationData
         } else {
-            correlationData %>% 
-                filter(name %in% input$text) %>% 
-                filter(state %in% input$state)
+          correlationData %>% 
+             filter(state %in% input$state)
         }
+        
+        
     })
     
     output$scatterplot <- renderPlot({
@@ -147,16 +167,58 @@ shinyServer(function(input, output) {
                                           "Utah" = "utah", "Vermont" = "vermont", 
                                           "Virginia" = "virginia", "Washington" = "washington", 
                                           "West Virginia" = "west-virginia", "Wisconsin" = "wisconsin", 
-                                          "Wyoming" = "wyoming"), selected = "washington")
+                                          "Wyoming" = "wyoming", "All" = "all"), selected = "all")
     
     })
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    output$barPlot <- renderPlot({
+        ggplot(data = diversityData)+
+            geom_bar(mapping = aes(x= category, y = enrollment), stat = "identity")+
+            labs(x = "Races", y = "Percentage of Enrollment", col = "blue", 
+                 title = "Percentage of Enrollment for each races") 
+    })
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 })
+
+#`American Indian / Alaska Native` ,
+#Asian ,
+#Black ,
+#Hispanic ,
+#`Native Hawaiian / Pacific Islander`,
+#White,
+#`Two Or More Races`,
+#Unknown,
+#`Non-Resident Foreign`,
+#`Total Minority`
 
 
 
 
 #1. state disappearing in map in tab 1
-#2. pivot wider issue 
-#3. scatter plot not showing issue 
+
+
 #4. 
  
