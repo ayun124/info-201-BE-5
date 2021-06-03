@@ -67,13 +67,20 @@ shinyServer(function(input, output) {
     sample <- reactive({
         if(is.null(input$degree)) {
             tuitionSelected<- tuition %>% 
-                filter(type %in% input$type)
+                filter(type %in% input$type) %>% 
+                group_by(state) %>% 
+                summarize(in_state_tuition = mean(in_state_tuition),
+                          out_of_state_tuition = mean(out_of_state_tuition))
+                
+                
         } else {
             tuitionSelected <- tuition %>% 
                 filter(degree_length %in% input$degree) %>% 
-                filter(type %in% input$type)
+                filter(type %in% input$type) %>% 
+                group_by(state) %>% 
+                summarize(in_state_tuition = mean(in_state_tuition),
+                          out_of_state_tuition = mean(out_of_state_tuition))
         }
-        
          left_join(stateMaps, tuitionSelected,by=c(region = "state"))
         
     })
@@ -112,40 +119,35 @@ shinyServer(function(input, output) {
     
   
     
-    
-    
-    
     correlationData <- left_join(salaryReform, tuitionReform, 
                                  by=c(name = "name", state = "state"))
-
+    
     
     chosenData <- reactive({
-        if(input$state == "all"){
-            correlationData
+        if(any(input$state == "all")){
+           selectedCorrelation <-  correlationData
         } else {
-          correlationData %>% 
-             filter(state %in% input$state)
+            selectedCorrelation <- correlationData %>% 
+                                     filter(state %in% input$state)
         }
-        
-        
     })
+    
+    
     
     output$scatterplot <- renderPlot({
         ggplot(data = chosenData())+
-            geom_point(mapping=aes(x= out_of_state_tuition, y = early_career_pay, col = state))+
+            geom_point(mapping=aes(x= out_of_state_tuition, y = early_career_pay, col = state), 
+                       na.rm = TRUE)+
         labs(x = "Out of State Tuition", y = "Early Career Pay", col = "State", 
              title = "Tuition versus Early Career Pay in U.S. Colleges/Universities") 
     })
     
     
     
-    output$nameText <- renderUI({
-        textInput(inputId = "text", label = ("Search the school by name"), value = "Enter text...")
-    })
     
     output$chosenState <- renderUI({
         checkboxGroupInput(inputId = "state", label = "Which State?",
-                           choices = list("Alabama" = "alabama", "Alaska" = "alaksa",
+                           choices = list("All" = "all", "Alabama" = "alabama", "Alaska" = "alaksa",
                                           "Arizona" = "arizona", "Arkansas" = "arkansas",
                                           "California" = "california", "Colorado" = "colorado",
                                           "Connecticut" = "connecticut", "Delaware" = "delaware",
@@ -154,7 +156,7 @@ shinyServer(function(input, output) {
                                           "Illinois" = "illinois", "Indiana" = "indiana",
                                           "Iowa" = "iowa", "Kansas" = "kansas",
                                           "Kentucky" = "kentucky", "Louisiana" = "louisiana",
-                                          "Maine"  = "maine", "Marylane"= "maryland",
+                                          "Maine"  = "maine", "Maryland"= "maryland",
                                           "Massachusetts" = "massachusetts",
                                           "Michigan" = "michigan", "Minnesota" = "minnesota",
                                           "Mississippi" = "mississippi", "Missouri" = "missouri",
@@ -170,7 +172,7 @@ shinyServer(function(input, output) {
                                           "Utah" = "utah", "Vermont" = "vermont", 
                                           "Virginia" = "virginia", "Washington" = "washington", 
                                           "West Virginia" = "west-virginia", "Wisconsin" = "wisconsin", 
-                                          "Wyoming" = "wyoming", "All" = "all"), selected = "all")
+                                          "Wyoming" = "wyoming"), selected = "all")
     
     })
     
@@ -221,26 +223,18 @@ shinyServer(function(input, output) {
     })
     
     
-  
 
-    
+
+
+
+
     output$barPlot <- renderPlot({
         ggplot(data = diData())+
             geom_bar(mapping = aes(x= category, y = enrollment), stat = "identity")+
             labs(x = "Races", y = "Percentage of Enrollment", col = "blue", 
                  title = "Percentage of Enrollment for each races") 
     })
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 })
 
 

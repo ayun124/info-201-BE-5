@@ -25,7 +25,7 @@ shinyUI(fluidPage(
           titlePanel("Correlation between tuition and career pay"),
                sidebarLayout(
                  sidebarPanel(
-                   uiOutput("nameText"),
+              
                    uiOutput("chosenState")
                  ),
                 mainPanel(
