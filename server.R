@@ -13,25 +13,26 @@ salaryData <- read.csv("salary_potential.csv")
 stateMaps <- map_data("state")
 
 
-diversity <- diversityData %>% 
-    pivot_wider(
-                names_from = category, 
-                values_from = enrollment, values_fn = list(enrollment = mean)) %>% 
-    mutate(Women = Women/total_enrollment*100,
-            `American Indian / Alaska Native` = `American Indian / Alaska Native` / total_enrollment * 100,
-           Asian = Asian/total_enrollment * 100,
-           Black = Black/total_enrollment * 100,
-           Hispanic = Hispanic/total_enrollment * 100,
-           `Native Hawaiian / Pacific Islander` =  `Native Hawaiian / Pacific Islander` / total_enrollment * 100,
-           White = White/total_enrollment * 100,
-           `Two Or More Races` = `Two Or More Races` / total_enrollment * 100,
-           Unknown = Unknown/total_enrollment * 100,
-           `Non-Resident Foreign` = `Non-Resident Foreign`/total_enrollment * 100,
-           `Total Minority` = `Total Minority`/total_enrollment*100)
+#diversity <- diversityData %>% 
+    #pivot_wider(
+               # names_from = category, 
+               # values_from = enrollment, values_fn = list(enrollment = mean)) %>% 
+    #mutate(Women = Women/total_enrollment*100,
+            #`American Indian / Alaska Native` = `American Indian / Alaska Native` / total_enrollment * 100,
+          # Asian = Asian/total_enrollment * 100,
+          # Black = Black/total_enrollment * 100,
+          # Hispanic = Hispanic/total_enrollment * 100,
+          # `Native Hawaiian / Pacific Islander` =  `Native Hawaiian / Pacific Islander` / total_enrollment * 100,
+          # White = White/total_enrollment * 100,
+          # `Two Or More Races` = `Two Or More Races` / total_enrollment * 100,
+          # Unknown = Unknown/total_enrollment * 100,
+          # `Non-Resident Foreign` = `Non-Resident Foreign`/total_enrollment * 100,
+          # `Total Minority` = `Total Minority`/total_enrollment*100)
     
 
 
-
+diversityData <- diversityData %>% 
+   mutate(enrollment = enrollment/total_enrollment * 100)
 
 
 
@@ -60,25 +61,26 @@ salaryReform <- salaryData %>%
 
 
 
-
-
-
 shinyServer(function(input, output) {
    
-    tuitionMap <- left_join(stateMaps, 
-                             tuition,
-                             by=c(region = "state"))
     
     sample <- reactive({
         if(is.null(input$degree)) {
-            tuitionMap %>% 
+            tuitionSelected<- tuition %>% 
                 filter(type %in% input$type)
         } else {
-            tuitionMap %>% 
+            tuitionSelected <- tuition %>% 
                 filter(degree_length %in% input$degree) %>% 
                 filter(type %in% input$type)
         }
+        
+         left_join(stateMaps, tuitionSelected,by=c(region = "state"))
+        
     })
+    
+    
+    
+    
     output$degreeLength <- renderUI({
         checkboxGroupInput(inputId = "degree", label = "Which Degree Length?",
                            choices = list("2 Years" = "2 Year", "4 Years" = "4 Year"),
@@ -91,6 +93,7 @@ shinyServer(function(input, output) {
                                    "For Profit" = "For Profit"),
                     selected = "Public")
     })
+    
     output$map <- renderPlot({
         ggplot(sample(), aes(long, lat)) +
             geom_polygon(aes(fill= in_state_tuition, group = group), col = "black", na.value = "black") +
@@ -178,14 +181,51 @@ shinyServer(function(input, output) {
     
     
     
+    output$diversityState <- renderUI({
+        radioButtons("diversity", label = ("Choose the State"),
+                 choices = list("Alabama" = "Alabama", "Alaska" = "Alaska",
+                                "Arizona" = "Arizona", "Arkansas" = "Arkansas",
+                                "California" = "California", "Colorado" = "Colorado",
+                                "Connecticut" = "Connecticut", "Delaware" = "Delaware",
+                                "Florida" = "Florida", "Georgia" = "Georgia",
+                                "Hawaii" = "Hawaii", "Iadho" = "Idaho",
+                                "Illinois" = "Illinois", "Indiana" = "Indiana",
+                                "Iowa" = "Iowa", "Kansas" = "Kansas",
+                                "Kentucky" = "Kentucky", "Louisiana" = "Louisiana",
+                                "Maine"  = "Maine", "Marylane"= "Maryland",
+                                "Massachusetts" = "Massachusetts",
+                                "Michigan" = "Michigan", "Minnesota" = "Minnesota",
+                                "Mississippi" = "Mississippi", "Missouri" = "Missouri",
+                                "Montana" = "Montana", "Nebraska" = "Nebraska", 
+                                "Nevada" = "Nevada", "New Hampshire" = "New Hampshire",
+                                "New Jersey" = "New Jersey", "New Mexico" = "New Mexico",
+                                "New York" = "New York", "North Carolina"="North Carolina",
+                                "North Dakota" = "North Dakota", "Ohio" = "Ohio",
+                                "Oklahoma" = "Oklahoma", "Oregon" = "Oregon",
+                                "Pennsylvania" = "Pennsylvania", "Rhode-island" = "Rhode Island",
+                                "South Carolina" = "South Carolina", "South Dakota" = "South dakota", 
+                                "Tennessee" = "Tennessee", "Texas" = "Texas", 
+                                "Utah" = "Utah", "Vermont" = "Vermont", 
+                                "Virginia" = "Virginia", "Washington" = "Washington", 
+                                "West Virginia" = "West Virginia", "Wisconsin" = "Wisconsin", 
+                                "Wyoming" = "Wyoming"), selected = "Washington")
+    })
+    
+
+    
+    diData <- reactive({
+        diversityData %>% 
+            filter(state %in% input$diversity) %>% 
+            group_by(category) %>% 
+            summarize(enrollment = mean(enrollment)) 
+    })
     
     
-    
-    
-    
+  
+
     
     output$barPlot <- renderPlot({
-        ggplot(data = diversityData)+
+        ggplot(data = diData())+
             geom_bar(mapping = aes(x= category, y = enrollment), stat = "identity")+
             labs(x = "Races", y = "Percentage of Enrollment", col = "blue", 
                  title = "Percentage of Enrollment for each races") 
@@ -203,22 +243,12 @@ shinyServer(function(input, output) {
     
 })
 
-#`American Indian / Alaska Native` ,
-#Asian ,
-#Black ,
-#Hispanic ,
-#`Native Hawaiian / Pacific Islander`,
-#White,
-#`Two Or More Races`,
-#Unknown,
-#`Non-Resident Foreign`,
-#`Total Minority`
 
 
 
 
-#1. state disappearing in map in tab 1
 
 
-#4. 
+
+
  

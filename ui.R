@@ -39,7 +39,7 @@ shinyUI(fluidPage(
                titlePanel("Diversity rate by race in Universities"),
                sidebarLayout(
                  sidebarPanel(
-                   
+                   uiOutput("diversityState")
                  ),
                  mainPanel(
                    plotOutput("barPlot")
