@@ -14,7 +14,7 @@ shinyUI(fluidPage(
                  img(src = "collegestudents.jpeg", height = 167, width = 500),
                  br(),
                  br(),
-                 p(strong("Hoon Yu, Henna Lakha, Albert Yun")),
+                 p(strong("Hoon Yu, Henna Lakha")),
                  br(),
                  p("Our goal with this project was to give parents/guardians the information
                    necessary to make an informed decision about where to send their child for
