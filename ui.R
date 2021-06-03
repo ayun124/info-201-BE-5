@@ -8,7 +8,7 @@ shinyUI(fluidPage(
     tabsetPanel(
       #Introduction tab
       tabPanel("Introduction",
-               titlePanel("Introduction"),
+               titlePanel("Choosing the Right State for College/University"),
                mainPanel(
                  br(),
                  img(src = "collegestudents.jpeg", height = 167, width = 500),
@@ -52,7 +52,7 @@ shinyUI(fluidPage(
       
       #Correlation tab.
       tabPanel("Correlation",
-          titlePanel("Correlation between tuition and career pay"),
+          titlePanel("Correlation Between Tuition and Career Pay"),
                sidebarLayout(
                  sidebarPanel(
                    uiOutput("chosenState")
@@ -69,7 +69,7 @@ shinyUI(fluidPage(
       ),
       #Diversity tab.
       tabPanel("Diversity",
-               titlePanel("Diversity rate by race in Universities in 2014"),
+               titlePanel("Diversity Rate by Race in Universities in 2014"),
                sidebarLayout(
                  sidebarPanel(
                    uiOutput("diversityState")
@@ -83,7 +83,44 @@ shinyUI(fluidPage(
                      focus on.")
                  )
                )
-      )
+        
+      ),
+      
+      #Conclusion Tab
+      tabPanel("Conclusion",
+               titlePanel("Conclusion"),
+               mainPanel(
+                 br(),
+                 br(),
+                 p("The most notable insight discovered in our project was the revelation of 
+                 a", strong("positive"), "correlation between out-of-state tuition and estimated early career pay 
+                 for colleges and universities in the United States. The trend appears to be that 
+                 the more expensive out-of-state tuition is, the higher the estimated early career earnings. 
+                 We believe that this information will be useful for our target audience because 
+                 it allows them to see the value in their investment of tuition. 
+                 This also implies that people with lower financial status may end up 
+                 having a lower career pay compared to those who have a higher financial status 
+                 before entering college/university. 
+                 This systematic defect in higher education in the U.S. must be addressed. 
+                 The graph with the trendline below illustrates the positive correlation."),
+                 br(),
+                 img(src = "correlation.jpeg", height = 300, width = 500),
+                 br(),
+                 br(),
+                 p("While our datasets were sufficient for our analysis, 
+                 we were not able to form a complete picture because our datasets 
+                 did not include every single college and university in the United States. 
+                 Our tuition data included the most schools, 
+                 but our early career pay dataset and diversity dataset had fewer. 
+                 It is possible that the addition of every single college and university 
+                 in the United States would have skewed our results, 
+                 but this is unlikely given the amount of data we did have to analyze. 
+                 In the future, this project could be advanced by using datasets that 
+                 cover all of the schools in the United States. 
+                 We could also provide additional useful information by determining 
+                 if there is a correlation between in-state tuition and early career earnings."
+                 )
+               ))
     )
 ))
 
